@@ -1,0 +1,97 @@
+<app-navbar></app-navbar>
+
+<div class="contenedor">
+
+  <div class="header">
+    <h1>Retirar Productos</h1>
+    <p>Administra los productos almacenados en tu despensa.</p>
+  </div>
+
+  <div class="tabla-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Estado</th>
+          <th>Fecha Vencimiento</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let producto of productosInventario; trackBy: trackByInventario">
+
+          <td>{{ producto.nombre_producto }}</td>
+
+          <td>
+            <ng-container *ngIf="idInventarioEditar !== producto.id_inventario; else editarCantidad">
+              {{ producto.cantidad }}
+            </ng-container>
+            <ng-template #editarCantidad>
+              <input type="number" min="1" [(ngModel)]="cantidadEditar">
+            </ng-template>
+          </td>
+
+          <td>{{ producto.estado }}</td>
+          <td>{{ producto.fecha_vencimiento }}</td>
+
+          <td class="acciones">
+
+            <!-- Modo lectura -->
+            <ng-container *ngIf="idInventarioEditar !== producto.id_inventario">
+              <button class="btn-editar" (click)="abrirEdicion(producto)">Editar</button>
+              <button class="btn-eliminar" (click)="solicitarEliminar(producto.id_inventario)">Eliminar</button>
+            </ng-container>
+
+            <!-- Modo edición -->
+            <ng-container *ngIf="idInventarioEditar === producto.id_inventario">
+              <button class="btn-guardar" (click)="guardarCantidad()" [disabled]="guardando" >{{ guardando ? 'Guardando...' : 'Guardar' }}</button>
+              <button class="btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>
+            </ng-container>
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal-overlay" *ngIf="idEliminarPendiente !== null">
+  <div class="modal-confirmacion">
+
+    <div class="modal-header">
+      <h3>Eliminar producto</h3>
+    </div>
+
+    <div class="modal-body">
+      <p>
+        ¿Estás seguro de que deseas eliminar este producto del inventario?
+      </p>
+
+      <p class="advertencia">
+        Esta acción no se puede deshacer.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        class="btn-cancelar"
+        (click)="cancelarEliminar()"
+        [disabled]="guardando">
+
+        Cancelar
+      </button>
+
+      <button
+        class="btn-eliminar"
+        (click)="confirmarEliminar()"
+        [disabled]="guardando">
+
+        Eliminar
+      </button>
+    </div>
+
+  </div>
+</div>
